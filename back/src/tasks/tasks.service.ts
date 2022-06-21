@@ -1,92 +1,71 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './tasks.model';
-import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { FilterTaskDto } from './dto/filter-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { UpdateTaskTitleDto } from './dto/update-task-title.dto';
-
-const booleanToTaskStatus = (done: boolean): TaskStatus =>
-  typeof done !== 'boolean' ? null : done ? TaskStatus.DONE : TaskStatus.INCOMPLETE;
+import { TasksDao } from './tasks.dao';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
+  constructor(private readonly tasksDao: TasksDao) {}
 
-  getTaskById(taskId: string): Task | undefined {
-    return this.tasks.find(({ id }) => id === taskId);
-  }
-
-  deleteTaskById(id: string): Task {
-    const task = this.getTaskById(id);
+  async getTaskById(taskId: string): Promise<Task> {
+    const task = await this.tasksDao.getTaskById(taskId);
 
     if (!task) {
-      throw new NotFoundException(`Task with ID '${id}' no found`);
+      throw new NotFoundException(`Task with ID '${taskId}' no found`);
+    }
+
+    return task;
+  }
+
+  async deleteTaskById(taskId: string): Promise<Task> {
+    const task = await this.tasksDao.getTaskById(taskId);
+
+    if (!task) {
+      throw new NotFoundException(`Task with ID '${taskId}' no found`);
     }
 
     if (task.status !== TaskStatus.DONE) {
-      throw new BadRequestException(`Task with ID '${id}' can't be deleted because its not in DONE status`);
+      throw new BadRequestException(`Task with ID '${taskId}' can't be deleted because its not in DONE status`);
     }
 
-    const index = this.tasks.indexOf(task);
-
-    this.tasks.splice(index, 1);
-
-    return task;
+    return this.tasksDao.deleteTaskById(task);
   }
 
-  getAllTasks(query: FilterTaskDto): Task[] {
-    let tasks = this.tasks;
-
-    if (typeof query.done === 'boolean') {
-      tasks = this.tasks.filter((task: Task) => task.status === booleanToTaskStatus(query.done));
-    }
-
-    if (typeof query.title === 'string') {
-      tasks = this.tasks.filter((task: Task) => task.title.includes(query.title));
-    }
-
-    return tasks;
+  async getAllTasks(): Promise<Task[]> {
+    return this.tasksDao.getAllTasks();
   }
 
-  createTask({ title }: CreateTaskDto): Task {
-    const task: Task = {
-      id: uuid(),
-      title,
-      status: TaskStatus.INCOMPLETE,
-      created: new Date(),
-    };
-
-    this.tasks.push(task);
-
-    return task;
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksDao.createTask(createTaskDto);
   }
 
-  updateTaskStatusById(id: string, updateTaskStatusDto: UpdateTaskStatusDto): Task {
-    const task = this.getTaskById(id);
+  async updateTaskStatusById(taskId: string, updateTaskStatusDto: UpdateTaskStatusDto): Promise<Task> {
+    const task = await this.tasksDao.getTaskById(taskId);
 
     if (!task) {
-      throw new NotFoundException(`Task with ID '${id}' no found`);
-    }
-
-    task.status = updateTaskStatusDto.status;
-
-    return task;
-  }
-
-  updateTaskTitleById(id: string, updateTaskTitleDto: UpdateTaskTitleDto): Task {
-    const task = this.getTaskById(id);
-
-    if (!task) {
-      throw new NotFoundException(`Task with ID '${id}' no found`);
+      throw new NotFoundException(`Task with ID '${taskId}' no found`);
     }
 
     if (task.status !== TaskStatus.INCOMPLETE) {
-      throw new BadRequestException(`Task with ID '${id}' can't be updated because its not in INCOMPLETE status`);
+      throw new BadRequestException(`Task with ID '${taskId}' can't be updated because its not in INCOMPLETE status`);
     }
 
-    task.title = updateTaskTitleDto.title;
+    return this.tasksDao.updateTaskStatus(task, updateTaskStatusDto.status);
+  }
 
-    return task;
+  async updateTaskTitleById(taskId: string, updateTaskTitleDto: UpdateTaskTitleDto): Promise<Task> {
+    const task = await this.tasksDao.getTaskById(taskId);
+
+    if (!task) {
+      throw new NotFoundException(`Task with ID '${taskId}' no found`);
+    }
+
+    if (task.status !== TaskStatus.INCOMPLETE) {
+      throw new BadRequestException(`Task with ID '${taskId}' can't be updated because its not in INCOMPLETE status`);
+    }
+
+    return this.tasksDao.updateTaskTitle(task, updateTaskTitleDto.title);
   }
 }

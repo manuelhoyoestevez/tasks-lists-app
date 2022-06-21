@@ -13,7 +13,7 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Task {
+  async getTaskById(@Param('id') id: string): Promise<Task> {
     const user = this.tasksService.getTaskById(id);
     if (!user) {
       throw new NotFoundException(`User ith ID '${id}' not found`);
@@ -22,7 +22,7 @@ export class TasksController {
   }
 
   @Patch('/:id/set-title')
-  updateTaskTitleById(@Param('id') id: string, @Body() updateTaskTitleDto: UpdateTaskTitleDto): Task {
+  async updateTaskTitleById(@Param('id') id: string, @Body() updateTaskTitleDto: UpdateTaskTitleDto): Promise<Task> {
     const user = this.tasksService.updateTaskTitleById(id, updateTaskTitleDto);
     if (!user) {
       throw new NotFoundException(`User ith ID '${id}' not found`);
@@ -31,7 +31,7 @@ export class TasksController {
   }
 
   @Patch('/:id/set-done')
-  updateTaskStatusById(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskStatusDto): Task {
+  async updateTaskStatusById(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskStatusDto): Promise<Task> {
     const user = this.tasksService.updateTaskStatusById(id, updateTaskDto);
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
@@ -40,17 +40,17 @@ export class TasksController {
   }
 
   @Get()
-  getAllTasks(@Query() query: FilterTaskDto): Task[] {
-    return this.tasksService.getAllTasks(query);
+  async getAllTasks(@Query() query: FilterTaskDto): Promise<Task[]> {
+    return this.tasksService.getAllTasks();
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Task {
+  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
   }
 
   @Delete('/:id')
-  deleteTaskById(@Param('id') id): Task {
+  async deleteTaskById(@Param('id') id): Promise<Task> {
     const user = this.tasksService.deleteTaskById(id);
     if (!user) {
       throw new NotFoundException(`User ith ID '${id}' not found`);
