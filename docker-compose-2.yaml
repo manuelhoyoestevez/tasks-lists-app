@@ -1,6 +1,28 @@
 version: '3.1'
 
 services:
+  tasks-lists-back:
+    build: ./back
+    image: tasks-lists-back:0.0.0
+    hostname: tasks-lists-back
+    container_name: tasks-lists-back
+    volumes:
+      - ./back:/usr/src/app
+    ports:
+      - "3000:3000"
+    command: "tail -f /dev/null"
+
+  tasks-lists-front:
+    build: ./front
+    image: tasks-lists-front:0.0.0
+    hostname: tasks-lists-front
+    container_name: tasks-lists-front
+    volumes:
+      - ./front:/usr/src/app
+    ports:
+      - "4200:4200"
+    command: "npm run build"
+
   mysql:
     image: "mysql:5.7.22"
     hostname: "mysql"

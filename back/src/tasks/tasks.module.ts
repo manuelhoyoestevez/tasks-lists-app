@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
-import { TasksDao } from './tasks.dao';
+import { TasksMysqlDao } from './tasks.mysql-dao';
 
 @Module({
-  providers: [TasksService, TasksDao],
+  providers: [TasksService, TasksMysqlDao],
   controllers: [TasksController],
 })
 export class TasksModule {}

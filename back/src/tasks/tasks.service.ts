@@ -3,11 +3,11 @@ import { Task, TaskStatus } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { UpdateTaskTitleDto } from './dto/update-task-title.dto';
-import { TasksDao } from './tasks.dao';
+import { TasksMysqlDao } from './tasks.mysql-dao';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly tasksDao: TasksDao) {}
+  constructor(private readonly tasksDao: TasksMysqlDao) {}
 
   async getTaskById(taskId: string): Promise<Task> {
     const task = await this.tasksDao.getTaskById(taskId);
