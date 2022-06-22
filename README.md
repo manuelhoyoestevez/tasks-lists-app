@@ -34,4 +34,4 @@ script is incorporated that will start everything necessary for the application 
 To do this you need to run: `docker-compose up -d`. After build the images and waiting a few moments for the
 server to start, we can access it by entering `localhost:3000` in the browser.
 
-On the other hand, if we want to see the database, PhpMyAdmin is also enabled to `localhos:8081`.
+On the other hand, if we want to see the database, PhpMyAdmin is also enabled to `localhost:8081`.
