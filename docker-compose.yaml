@@ -6,6 +6,11 @@ services:
     image: tasks-lists-back:0.0.0
     hostname: tasks-lists-back
     container_name: tasks-lists-back
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=tasks
+      - MYSQL_USER=tasks
+      - MYSQL_PASSWORD=tasks
     ports:
       - "3000:3000"
 
@@ -24,9 +29,9 @@ services:
     container_name: "mysql"
     environment:
       - SERVICE_NAME=mysql
-      - MYSQL_DATABASE=admin
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin
+      - MYSQL_DATABASE=tasks
+      - MYSQL_USER=tasks
+      - MYSQL_PASSWORD=tasks
       - MYSQL_ROOT_PASSWORD=c2Xq5vdÇz?KR62AR
     volumes:
       - ./setup.sql:/docker-entrypoint-initdb.d/model.sql:ro
