@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { url } from '../back-url';
 
-const url = '/api';
 const DONE = 'DONE';
 const INCOMPLETE = 'INCOMPLETE';
 
@@ -22,21 +22,11 @@ const request = (method: string, path: string, body: any): Promise<Response> => 
   const options = {
       method,
       url: `${url}/${path}`,
-      data: '',
-      headers: {
-          'content-type': 'application/json'
-      }
+      headers: { 'content-type': 'application/json' },
+      data: body ? JSON.stringify(body) : ''
   };
 
-  if (body) {
-      options.data = JSON.stringify(body);
-  }
-
-  return new Promise((resolve, reject) => {
-      axios(options)
-          .then(({ status, data }) => resolve({ status, data }))
-          .catch((err) => err.response ? resolve({ status: err.response.status, data: err.response.data }) : reject(err))
-  });
+  return axios(options);
 };
 
 @Component({
@@ -65,21 +55,31 @@ export class AppComponent {
   }
 
   onCreate = async (ngForm: NgForm) => {
-    this.createTask(this.taskTitle);
+    if (this.taskTitle === '') {
+      alert('Task title is empty')
+      return false;
+    }
+    await this.createTask(this.taskTitle);
+    this.taskTitle = '';
     return false;
   }
 
-  onEdit = async (ngForm: NgForm, task: Task, index: number) => {
+  onEdit = async (ngForm: NgForm, task: Task) => {
+    if (task.title === '') {
+      alert('Task title is empty')
+      await this.reloadTasks();
+      return false;
+    }
     await this.editTask(task.id, task.title);
     return false;
   }
 
-  onDone = async (ngForm: NgForm, task: Task, index: number) => {
+  onDone = async (ngForm: NgForm, task: Task) => {
     await this.completeTask(task.id);
     return false;
   }
 
-  onDelete = async (ngForm: NgForm, task: Task, index: number) => {
+  onDelete = async (ngForm: NgForm, task: Task) => {
     await this.deleteTask(task.id);
     return false;
   }

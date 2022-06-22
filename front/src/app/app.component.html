@@ -7,7 +7,7 @@
     list-style: none;
   }
 </style>
-
+<br/>
 <form #f="ngForm" (ngSubmit)="onCreate(f)" novalidate >
   <div class="form-group row">
     <label for="newTask" class="col-sm-3 col-form-label"><b>New Task:</b></label>
@@ -19,61 +19,64 @@
         placeholder="Task title"
         [(ngModel)]="taskTitle"
         name="name"
-        #name="ngModel">
+        #name="ngModel"
+        required/>
     </div>
     <div class="col-sm-3">
       <button type="submit" class="btn btn-primary">Create</button>
     </div>
   </div>
 </form>
-
+<br/>
 <div class="lists row">
   <div class="col-sm-6">
     <ul>
       <h2>Incompleted tasks</h2>
+      <br/>
       <li *ngFor="let task of this.getIncompletedTasks(); index as i;">
-        <form #f="ngForm" (ngSubmit)="onDone(f, task, i)" novalidate>
+        <form #f="ngForm" (ngSubmit)="onDone(f, task)" novalidate>
           <div class="form-group row">
             <div class="col-sm-6">
               <input
                 type="text"
                 class="form-control"
-                id="newTask"
                 placeholder="Task title"
                 [(ngModel)]="task.title"
                 name="name"
                 #name="ngModel"
-                (change)="onEdit(f, task, i)">
+                (change)="onEdit(f, task)"/>
             </div>
             <div class="col-sm-6">
               <button type="submit" class="btn btn-primary">Done</button>
             </div>
           </div>
+          <br/>
         </form>
       </li>
     </ul>
   </div>
   <div class="col-sm-6">
     <h2>Completed tasks</h2>
+    <br/>
     <ul>
       <li *ngFor="let task of this.getCompletedTasks(); index as i;">
-        <form #f="ngForm" (ngSubmit)="onDelete(f, task, i)" novalidate>
+        <form #f="ngForm" (ngSubmit)="onDelete(f, task)" novalidate>
           <div class="form-group row">
             <div class="col-sm-6">
               <input
                 disabled="true"
                 type="text"
                 class="form-control"
-                id="newTask"
                 placeholder="Task title"
                 [(ngModel)]="task.title"
                 name="name"
-                #name="ngModel">
+                #name="ngModel"/>
             </div>
             <div class="col-sm-6">
               <button type="submit" class="btn btn-danger">Delete</button>
             </div>
           </div>
+          <br/>
         </form>
       </li>
     </ul>
