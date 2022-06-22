@@ -14,7 +14,7 @@ export class TasksMysqlDao {
 
     const { id, title, status, created } = result[0];
 
-    return { id, title, status, created };
+    return { id, title: unescape(title), status, created };
   }
 
   async createTask(task): Promise<Task> {
@@ -53,6 +53,6 @@ export class TasksMysqlDao {
 
   async getAllTasks(): Promise<Task[]> {
     const result = await poolQuery(`SELECT * FROM task;`);
-    return result.map(({ id, title, status, created }) => ({ id, title, status, created }));
+    return result.map(({ id, title, status, created }) => ({ id, title: unescape(title), status, created }));
   }
 }
